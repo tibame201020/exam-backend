@@ -1,6 +1,8 @@
 package com.example.exams_backend.service;
 
 import com.example.exams_backend.model.Exam;
+import com.example.exams_backend.model.ExamModeParam;
+import com.example.exams_backend.model.Quiz;
 
 import java.util.List;
 
@@ -15,4 +17,6 @@ public interface ExamService {
     boolean removeExam(String name);
 
     Exam getExamByName(String examName);
+
+    Quiz[] getRandomQuizzes(ExamModeParam examModeParam);
 }
