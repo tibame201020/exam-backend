@@ -17,7 +17,7 @@ public class ExamsBackendApplication {
 		SpringApplication.run(ExamsBackendApplication.class, args);
 	}
 
-	@Bean
+	// @Bean
 	CommandLineRunner run() {
 		return args -> {
 			Log log = LogFactory.getLog(this.getClass());
