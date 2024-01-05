@@ -1,5 +1,5 @@
 pipeline {
-    agent maven-jdk17
+    agent {label "some-label"}
     stages {
         stage('Test') {
             steps {
