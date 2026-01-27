@@ -8,7 +8,9 @@ import com.example.exams_backend.service.ExamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
@@ -38,12 +40,16 @@ public class ExamServiceImpl implements ExamService {
 
     @Override
     public List<String> getExamList(String keyWord) {
-        List<String> examNameList = examRepo.findAll().stream().map(exam -> {return exam.getName();}).collect(Collectors.toList());
+        List<String> examNameList = examRepo.findAll().stream().map(exam -> {
+            return exam.getName();
+        }).collect(Collectors.toList());
 
         if (null == keyWord || keyWord.isEmpty()) {
             return examNameList;
         } else {
-            return examNameList.stream().filter(s -> { return s.contains(keyWord);}).collect(Collectors.toList());
+            return examNameList.stream().filter(s -> {
+                return s.contains(keyWord);
+            }).collect(Collectors.toList());
         }
     }
 
@@ -66,11 +72,14 @@ public class ExamServiceImpl implements ExamService {
     @Override
     public Quiz[] getRandomQuizzes(ExamModeParam examModeParam) {
         Quiz[] originalQuizzes = examRepo.findById(examModeParam.getName()).get().getQuizzes();
-        int fullLength = originalQuizzes.length;
-        int limit = examModeParam.getQuizzesNum() == 0 ? fullLength : fullLength > examModeParam.getQuizzesNum()? examModeParam.getQuizzesNum(): fullLength;
+        List<Quiz> quizList = new ArrayList<>(Arrays.asList(originalQuizzes));
+        Collections.shuffle(quizList);
 
-        return Arrays.stream(originalQuizzes)
-                .sorted((o1, o2) -> Double.compare(Math.random(), 0.5))
+        int fullLength = quizList.size();
+        Integer requestedNum = examModeParam.getQuizzesNum();
+        int limit = (requestedNum == null || requestedNum == 0) ? fullLength : Math.min(fullLength, requestedNum);
+
+        return quizList.stream()
                 .limit(limit)
                 .toArray(Quiz[]::new);
     }
