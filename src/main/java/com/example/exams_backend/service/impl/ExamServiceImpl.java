@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,13 +66,25 @@ public class ExamServiceImpl implements ExamService {
 
     @Override
     public Quiz[] getRandomQuizzes(ExamModeParam examModeParam) {
-        Quiz[] originalQuizzes = examRepo.findById(examModeParam.getName()).get().getQuizzes();
-        int fullLength = originalQuizzes.length;
-        int limit = examModeParam.getQuizzesNum() == 0 ? fullLength : fullLength > examModeParam.getQuizzesNum()? examModeParam.getQuizzesNum(): fullLength;
+        Quiz[] quizzes = examRepo.findById(examModeParam.getName())
+                .map(Exam::getQuizzes)
+                .orElseGet(() -> new Quiz[] {})
+                .clone();
 
-        return Arrays.stream(originalQuizzes)
-                .sorted((o1, o2) -> Double.compare(Math.random(), 0.5))
-                .limit(limit)
-                .toArray(Quiz[]::new);
+        int fullLength = quizzes.length;
+        int limit = examModeParam.getQuizzesNum() == 0
+                ? fullLength
+                : Math.min(fullLength, examModeParam.getQuizzesNum());
+
+        ThreadLocalRandom rnd = ThreadLocalRandom.current();
+
+        for (int i = fullLength - 1; i > 0; i--) {
+            int j = rnd.nextInt(i + 1);
+            Quiz tmp = quizzes[i];
+            quizzes[i] = quizzes[j];
+            quizzes[j] = tmp;
+        }
+
+        return Arrays.copyOf(quizzes, limit);
     }
 }

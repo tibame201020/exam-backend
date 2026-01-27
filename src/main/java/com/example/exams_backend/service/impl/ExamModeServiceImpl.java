@@ -73,9 +73,12 @@ public class ExamModeServiceImpl implements ExamModeService {
 
     @Override
     public List<ExamRecordScore> getScoreList(String keyword) {
+        System.err.println("in getScoreList");
         List<ExamRecordScore> examRecordScores = examRecordScoreRepo.findAll();
         Collections.reverse(examRecordScores);
+        System.err.println("keyword = " + keyword);
         if ("getScoreByKeyword".equals(keyword)) {
+            System.err.println("return all");
             return examRecordScores;
         } else {
             return examRecordScores.stream().filter(examRecordScore -> examRecordScore.getExamName().contains(keyword)).collect(Collectors.toList());

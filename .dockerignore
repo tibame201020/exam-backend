@@ -1,0 +1,9 @@
+target
+h2data
+.git
+.idea
+.vscode
+mvnw
+mvnw.cmd
+.mvn
+*.log
